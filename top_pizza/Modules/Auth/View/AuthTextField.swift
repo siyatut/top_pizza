@@ -33,7 +33,7 @@ final class AuthTextField: UIView {
         textField.placeholder = placeholder
         textField.isSecureTextEntry = isSecure
         textField.borderStyle = .none
-        textField.autocapitalizationType = .none
+        textField.autocapitalizationType = .sentences
         textField.backgroundColor = .systemBackground
         
         iconImageView.translatesAutoresizingMaskIntoConstraints = false
