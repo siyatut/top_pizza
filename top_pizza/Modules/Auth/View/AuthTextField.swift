@@ -25,15 +25,16 @@ final class AuthTextField: UIView {
         }
         super.init(frame: .zero)
         
-        backgroundColor = UIColor(white: 0.95, alpha: 1)
+        backgroundColor = .systemBackground
         layer.cornerRadius = 20
         layer.borderWidth = 1
-        layer.borderColor = UIColor.clear.cgColor
+        layer.borderColor = UIColor.systemGray.cgColor
         
         textField.placeholder = placeholder
         textField.isSecureTextEntry = isSecure
         textField.borderStyle = .none
         textField.autocapitalizationType = .none
+        textField.backgroundColor = .systemBackground
         
         iconImageView.translatesAutoresizingMaskIntoConstraints = false
         textField.translatesAutoresizingMaskIntoConstraints = false

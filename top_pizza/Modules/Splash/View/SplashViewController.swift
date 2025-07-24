@@ -38,6 +38,5 @@ final class SplashViewController: UIViewController {
 extension SplashViewController: SplashViewProtocol {
     func navigateToAuth() {
         presenter.router.routeToAuth(from: self)
-        print("Navigating to auth")
     }
 }

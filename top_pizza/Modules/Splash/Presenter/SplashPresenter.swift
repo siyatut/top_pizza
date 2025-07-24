@@ -29,6 +29,5 @@ final class SplashPresenter: SplashPresenterProtocol {
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
             self.view?.navigateToAuth()
         }
-        print("Splash presenter loaded")
     }
 }

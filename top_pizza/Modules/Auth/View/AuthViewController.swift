@@ -97,7 +97,7 @@ final class AuthViewController: UIViewController {
         NSLayoutConstraint.activate([
             
             authLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            authLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 14),
+            authLabel.topAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.topAnchor, constant: 14),
             
             logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             logoImageView.topAnchor.constraint(lessThanOrEqualTo: authLabel.bottomAnchor, constant: 121),
@@ -117,7 +117,7 @@ final class AuthViewController: UIViewController {
             bottomPanelView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomPanelView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             bottomConstraint,
-            bottomPanelView.heightAnchor.constraint(equalToConstant: 88),
+            bottomPanelView.heightAnchor.constraint(equalToConstant: 118),
             
             loginButton.topAnchor.constraint(equalTo: bottomPanelView.topAnchor, constant: 16),
             loginButton.leadingAnchor.constraint(equalTo: bottomPanelView.leadingAnchor, constant: 16),
