@@ -5,6 +5,8 @@
 //  Created by Anastasia Tyutinova on 24/7/2568 BE.
 //
 
+
+
 import UIKit
 
 final class AuthViewController: UIViewController, UITextFieldDelegate {
@@ -40,7 +42,6 @@ final class AuthViewController: UIViewController, UITextFieldDelegate {
         button.backgroundColor = .systemPink
         button.tintColor = .white
         button.layer.cornerRadius = 20
-        button.addTarget(self, action: #selector(loginTapped), for: .touchUpInside)
         return button
     }()
     
@@ -76,7 +77,6 @@ final class AuthViewController: UIViewController, UITextFieldDelegate {
         button.tintColor = .white
         button.layer.cornerRadius = 9
         button.clipsToBounds = true
-        button.addTarget(self, action: #selector(hideErrorBanner), for: .touchUpInside)
         return button
     }()
     
@@ -98,6 +98,9 @@ final class AuthViewController: UIViewController, UITextFieldDelegate {
         
         emailField.textField.delegate = self
         passwordField.textField.delegate = self
+        
+        loginButton.addTarget(self, action: #selector(loginTapped), for: .touchUpInside)
+        errorCloseButton.addTarget(self, action: #selector(hideErrorBanner), for: .touchUpInside)
         
         emailField.textField.addTarget(self, action: #selector(textFieldsChanged), for: .editingChanged)
         passwordField.textField.addTarget(self, action: #selector(textFieldsChanged), for: .editingChanged)
