@@ -72,7 +72,18 @@ final class AuthTextField: UIView {
     }
 
     @objc private func toggleVisibility() {
+        let wasResponder = textField.isFirstResponder
+        let text = textField.text
+        let selected = textField.selectedTextRange
+
         textField.isSecureTextEntry.toggle()
+        textField.text = text
+
+        if wasResponder {
+            textField.becomeFirstResponder()
+            textField.selectedTextRange = selected
+        }
+
         let imageName = textField.isSecureTextEntry ? "eye.slash" : "eye"
         eyeButton?.setImage(UIImage(systemName: imageName), for: .normal)
     }

@@ -75,14 +75,18 @@ final class AuthViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupLayout()
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardFrameWillChange),
+            name: UIResponder.keyboardWillChangeFrameNotification,
+            object: nil
+        )
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
         view.addGestureRecognizer(tapGesture)
     }
-
+    
     private func setupLayout() {
         view.backgroundColor = .systemBackground
         [authLabel, logoImageView, emailField, passwordField, errorBanner].forEach { $0.translatesAutoresizingMaskIntoConstraints = false;
@@ -114,7 +118,7 @@ final class AuthViewController: UIViewController {
             passwordField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             passwordField.heightAnchor.constraint(equalToConstant: 50),
             
-            passwordField.bottomAnchor.constraint(lessThanOrEqualTo: bottomPanelView.topAnchor, constant: -79),
+            passwordField.bottomAnchor.constraint(equalTo: bottomPanelView.topAnchor, constant: -79),
             
             bottomPanelView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomPanelView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -137,27 +141,23 @@ final class AuthViewController: UIViewController {
         presenter.login(email: emailField.textField.text, password: passwordField.textField.text)
     }
     
-    @objc private func keyboardWillShow(_ notification: Notification) {
+    @objc private func keyboardFrameWillChange(_ notification: Notification) {
         guard let userInfo = notification.userInfo,
               let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
-              let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double else { return }
+              let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double,
+              let curveValue = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt else { return }
 
-        let keyboardHeight = keyboardFrame.height - view.safeAreaInsets.bottom
+        let keyboardHeight = max(view.frame.height - keyboardFrame.origin.y, 0)
         bottomConstraint.constant = -keyboardHeight
 
-        UIView.animate(withDuration: duration) {
+        let options = UIView.AnimationOptions(rawValue: curveValue << 16)
+
+        UIView.animate(withDuration: duration,
+                       delay: 0,
+                       options: [.beginFromCurrentState, options],
+                       animations: {
             self.view.layoutIfNeeded()
-        }
-    }
-
-    @objc private func keyboardWillHide(_ notification: Notification) {
-        guard let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double else { return }
-
-        bottomConstraint.constant = 0
-
-        UIView.animate(withDuration: duration) {
-            self.view.layoutIfNeeded()
-        }
+        })
     }
     
     @objc private func dismissKeyboard() {
