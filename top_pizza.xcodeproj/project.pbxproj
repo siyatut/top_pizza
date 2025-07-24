@@ -33,7 +33,7 @@
 		520776472E3123550080715D /* Exceptions for "top_pizza" folder in "top_pizza" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Info.plist,
+				App/Info.plist,
 			);
 			target = 5207761B2E3123530080715D /* top_pizza */;
 		};

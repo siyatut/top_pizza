@@ -7,12 +7,14 @@
 
 import UIKit
 
-class MainScreenViewController: UIViewController {
+final class SplashViewController: UIViewController {
     
     private let logoImageView: UIImageView = {
         let imageView = UIImageView(image: UIImage(named: "logo"))
         return imageView
     }()
+    
+    var presenter: SplashPresenterProtocol!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,3 +33,8 @@ class MainScreenViewController: UIViewController {
     }
 }
 
+extension SplashViewController: SplashViewProtocol {
+    func navigateToAuth() {
+        presenter.router.routeToAuth(from: self)
+    }
+}
