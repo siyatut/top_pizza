@@ -5,8 +5,6 @@
 //  Created by Anastasia Tyutinova on 24/7/2568 BE.
 //
 
-// TODO: - Пофиксить ограничения и ошибку при несовпадении логина или пароля
-
 import UIKit
 
 final class AuthViewController: UIViewController, UITextFieldDelegate {
@@ -31,9 +29,9 @@ final class AuthViewController: UIViewController, UITextFieldDelegate {
     private let emailField = AuthTextField(placeholder: "Логин", systemImageName: "person.fill")
     
     private let passwordField: AuthTextField = {
-            let field = AuthTextField(placeholder: "Пароль", systemImageName: "lock.fill", isSecure: true)
-            return field
-        }()
+        let field = AuthTextField(placeholder: "Пароль", systemImageName: "lock.fill", isSecure: true)
+        return field
+    }()
     
     private let loginButton: UIButton = {
         let button = UIButton(type: .system)
@@ -57,19 +55,27 @@ final class AuthViewController: UIViewController, UITextFieldDelegate {
         view.isHidden = true
         return view
     }()
-
+    
     private let errorLabel: UILabel = {
         let label = UILabel()
         label.text = "Неверный логин или пароль"
-        label.textColor = .systemRed
-        label.font = .systemFont(ofSize: 14, weight: .medium)
+        label.textColor = .systemPink
+        label.textAlignment = .center
+        label.font = .systemFont(ofSize: 16, weight: .medium)
         return label
     }()
-
+    
     private let errorCloseButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "xmark"), for: .normal)
-        button.tintColor = .systemRed
+        
+        let config = UIImage.SymbolConfiguration(pointSize: 10, weight: .bold)
+        let image = UIImage(systemName: "xmark", withConfiguration: config)
+        
+        button.setImage(image, for: .normal)
+        button.backgroundColor = .systemPink
+        button.tintColor = .white
+        button.layer.cornerRadius = 9
+        button.clipsToBounds = true
         button.addTarget(self, action: #selector(hideErrorBanner), for: .touchUpInside)
         return button
     }()
@@ -113,12 +119,15 @@ final class AuthViewController: UIViewController, UITextFieldDelegate {
     
     private func setupLayout() {
         view.backgroundColor = .systemBackground
-        [authLabel, logoImageView, emailField, passwordField, errorBannerView, bottomPanelView, loginButton].forEach { $0.translatesAutoresizingMaskIntoConstraints = false;
+        [authLabel, logoImageView, emailField, passwordField, errorBannerView, bottomPanelView].forEach { $0.translatesAutoresizingMaskIntoConstraints = false;
             view.addSubview($0)
         }
         errorBannerView.addSubview(errorLabel)
+        errorLabel.translatesAutoresizingMaskIntoConstraints = false
         errorBannerView.addSubview(errorCloseButton)
+        errorCloseButton.translatesAutoresizingMaskIntoConstraints = false
         bottomPanelView.addSubview(loginButton)
+        loginButton.translatesAutoresizingMaskIntoConstraints = false
         
         bottomConstraint = bottomPanelView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         
@@ -134,7 +143,7 @@ final class AuthViewController: UIViewController, UITextFieldDelegate {
             emailField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             emailField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             emailField.heightAnchor.constraint(equalToConstant: 50),
-
+            
             passwordField.topAnchor.constraint(equalTo: emailField.bottomAnchor, constant: 20),
             passwordField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             passwordField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
@@ -152,18 +161,18 @@ final class AuthViewController: UIViewController, UITextFieldDelegate {
             loginButton.trailingAnchor.constraint(equalTo: bottomPanelView.trailingAnchor, constant: -16),
             loginButton.heightAnchor.constraint(equalToConstant: 48),
             
-            errorBannerView.topAnchor.constraint(equalTo: authLabel.bottomAnchor, constant: -12),
+            errorBannerView.topAnchor.constraint(equalTo: authLabel.topAnchor),
             errorBannerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             errorBannerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             errorBannerView.heightAnchor.constraint(equalToConstant: 48),
             
             errorLabel.centerYAnchor.constraint(equalTo: errorBannerView.centerYAnchor),
-            errorLabel.leadingAnchor.constraint(equalTo: errorBannerView.leadingAnchor, constant: 16),
+            errorLabel.centerXAnchor.constraint(equalTo: errorBannerView.centerXAnchor),
             
             errorCloseButton.centerYAnchor.constraint(equalTo: errorBannerView.centerYAnchor),
             errorCloseButton.trailingAnchor.constraint(equalTo: errorBannerView.trailingAnchor, constant: -16),
-            errorCloseButton.widthAnchor.constraint(equalToConstant: 24),
-            errorCloseButton.heightAnchor.constraint(equalToConstant: 24)
+            errorCloseButton.widthAnchor.constraint(equalToConstant: 18),
+            errorCloseButton.heightAnchor.constraint(equalToConstant: 18)
         ])
     }
     
@@ -176,12 +185,12 @@ final class AuthViewController: UIViewController, UITextFieldDelegate {
               let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
               let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double,
               let curveValue = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt else { return }
-
+        
         let keyboardHeight = max(view.frame.height - keyboardFrame.origin.y, 0)
         bottomConstraint.constant = -keyboardHeight
-
+        
         let options = UIView.AnimationOptions(rawValue: curveValue << 16)
-
+        
         UIView.animate(withDuration: duration,
                        delay: 0,
                        options: [.beginFromCurrentState, options],
@@ -193,7 +202,7 @@ final class AuthViewController: UIViewController, UITextFieldDelegate {
     @objc private func textFieldsChanged() {
         let email = emailField.textField.text ?? ""
         let password = passwordField.textField.text ?? ""
-
+        
         let isFormFilled = !email.isEmpty && !password.isEmpty
         loginButton.isEnabled = isFormFilled
         loginButton.alpha = isFormFilled ? 1.0 : 0.5
@@ -211,12 +220,12 @@ extension AuthViewController: AuthViewProtocol {
         errorLabel.text = message
         errorBannerView.isHidden = false
     }
-
+    
     func showSuccess() {
         errorBannerView.isHidden = true
         // сделать дальнейший переход, когда появится main
     }
-
+    
     @objc private func hideErrorBanner() {
         errorBannerView.isHidden = true
     }
