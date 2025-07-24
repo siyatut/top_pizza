@@ -5,7 +5,6 @@
 //  Created by Anastasia Tyutinova on 24/7/2568 BE.
 //
 
-// TODO: - Дёргается при переключении между логином и паролем
 // TODO: - Логин и пароль для единственного входа + ошибка при несовпадении
 // TODO: - До нажатия на клавиатуру кнопка Войти должна быть забелённой
 
@@ -26,6 +25,7 @@ final class AuthViewController: UIViewController {
     private let logoImageView: UIImageView = {
         let imageView = UIImageView(image: UIImage(named: "logo"))
         imageView.tintColor = .systemPink
+        imageView.contentMode = .scaleAspectFit
         return imageView
     }()
     
@@ -103,7 +103,7 @@ final class AuthViewController: UIViewController {
         NSLayoutConstraint.activate([
             
             authLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            authLabel.topAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.topAnchor, constant: 14),
+            authLabel.topAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
             
             logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             logoImageView.topAnchor.constraint(lessThanOrEqualTo: authLabel.bottomAnchor, constant: 121),
