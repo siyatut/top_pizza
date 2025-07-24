@@ -35,6 +35,7 @@ final class AuthTextField: UIView {
         textField.borderStyle = .none
         textField.autocapitalizationType = .sentences
         textField.backgroundColor = .systemBackground
+        textField.tintColor = .systemGray
         
         iconImageView.translatesAutoresizingMaskIntoConstraints = false
         textField.translatesAutoresizingMaskIntoConstraints = false
