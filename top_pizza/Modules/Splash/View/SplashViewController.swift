@@ -11,6 +11,7 @@ final class SplashViewController: UIViewController {
     
     private let logoImageView: UIImageView = {
         let imageView = UIImageView(image: UIImage(named: "logo"))
+        imageView.tintColor = .white
         return imageView
     }()
     
@@ -18,8 +19,9 @@ final class SplashViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .tintColor
+        view.backgroundColor = .systemPink
         setupUI()
+        presenter.viewDidLoad()
     }
     
     private func setupUI() {
@@ -36,5 +38,6 @@ final class SplashViewController: UIViewController {
 extension SplashViewController: SplashViewProtocol {
     func navigateToAuth() {
         presenter.router.routeToAuth(from: self)
+        print("Navigating to auth")
     }
 }
