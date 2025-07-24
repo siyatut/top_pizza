@@ -5,11 +5,13 @@
 //  Created by Anastasia Tyutinova on 24/7/2568 BE.
 //
 
+// TODO: - Дёргается при переключении между логином и паролем
 
 import UIKit
 
 final class AuthViewController: UIViewController {
     
+    private var bottomConstraint: NSLayoutConstraint!
     var presenter: AuthPresenterProtocol!
     
     private let authLabel: UILabel = {
@@ -56,21 +58,49 @@ final class AuthViewController: UIViewController {
             return label
         }()
     
+    private let bottomPanelView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 24
+        view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOpacity = 0.05
+        view.layer.shadowOffset = CGSize(width: 0, height: -2)
+        view.layer.shadowRadius = 4
+        return view
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupLayout()
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
     }
 
     private func setupLayout() {
         view.backgroundColor = .systemBackground
-        [authLabel, logoImageView, emailField, passwordField, loginButton].forEach { $0.translatesAutoresizingMaskIntoConstraints = false; view.addSubview($0) }
-
+        [authLabel, logoImageView, emailField, passwordField, errorBanner].forEach { $0.translatesAutoresizingMaskIntoConstraints = false;
+            view.addSubview($0)
+        }
+        
+        view.addSubview(bottomPanelView)
+        bottomPanelView.translatesAutoresizingMaskIntoConstraints = false
+        bottomPanelView.addSubview(loginButton)
+        loginButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        bottomConstraint = bottomPanelView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        
         NSLayoutConstraint.activate([
+            
             authLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             authLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 14),
             
             logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            logoImageView.topAnchor.constraint(equalTo: authLabel.bottomAnchor, constant: 121),
+            logoImageView.topAnchor.constraint(lessThanOrEqualTo: authLabel.bottomAnchor, constant: 121),
             
             emailField.topAnchor.constraint(equalTo: logoImageView.bottomAnchor, constant: 32),
             emailField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -82,16 +112,54 @@ final class AuthViewController: UIViewController {
             passwordField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             passwordField.heightAnchor.constraint(equalToConstant: 50),
             
-            loginButton.topAnchor.constraint(equalTo: passwordField.bottomAnchor, constant: 254),
-            loginButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            loginButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            passwordField.bottomAnchor.constraint(lessThanOrEqualTo: bottomPanelView.topAnchor, constant: -79),
+            
+            bottomPanelView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            bottomPanelView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            bottomConstraint,
+            bottomPanelView.heightAnchor.constraint(equalToConstant: 88),
+            
+            loginButton.topAnchor.constraint(equalTo: bottomPanelView.topAnchor, constant: 16),
+            loginButton.leadingAnchor.constraint(equalTo: bottomPanelView.leadingAnchor, constant: 16),
+            loginButton.trailingAnchor.constraint(equalTo: bottomPanelView.trailingAnchor, constant: -16),
             loginButton.heightAnchor.constraint(equalToConstant: 48),
-            loginButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
+            
+            errorBanner.topAnchor.constraint(equalTo: authLabel.bottomAnchor, constant: 8),
+            errorBanner.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            errorBanner.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            errorBanner.heightAnchor.constraint(equalToConstant: 36)
         ])
     }
     
     @objc private func loginTapped() {
         presenter.login(email: emailField.textField.text, password: passwordField.textField.text)
+    }
+    
+    @objc private func keyboardWillShow(_ notification: Notification) {
+        guard let userInfo = notification.userInfo,
+              let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
+              let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double else { return }
+
+        let keyboardHeight = keyboardFrame.height - view.safeAreaInsets.bottom
+        bottomConstraint.constant = -keyboardHeight
+
+        UIView.animate(withDuration: duration) {
+            self.view.layoutIfNeeded()
+        }
+    }
+
+    @objc private func keyboardWillHide(_ notification: Notification) {
+        guard let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double else { return }
+
+        bottomConstraint.constant = 0
+
+        UIView.animate(withDuration: duration) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
     }
 }
 
