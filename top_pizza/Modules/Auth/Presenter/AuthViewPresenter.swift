@@ -27,21 +27,18 @@ final class AuthPresenter: AuthPresenterProtocol {
     }
     
     func login(email: String?, password: String?) {
-        guard let email = email, let password = password else {
+        guard let email = email?.trimmingCharacters(in: .whitespacesAndNewlines),
+              let password = password?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !email.isEmpty, !password.isEmpty else {
             view?.showError(message: "Заполните все поля")
             return
         }
         
-        guard email.contains("@"), password.count >= 6 else {
-            view?.showError(message: "Некорректный email или пароль")
+        guard email == "Qwerty123", password == "Qwerty123" else {
+            view?.showError(message: "Неверный логин или пароль")
             return
         }
-
-        if email == "pizza@top.ru" && password == "123456" {
-            view?.showSuccess()
-            // router.routeToMain() // когда появится main
-        } else {
-            view?.showError(message: "Неверный логин или пароль")
-        }
+        
+        view?.showSuccess()
     }
 }

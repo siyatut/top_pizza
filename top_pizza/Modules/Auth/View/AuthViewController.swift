@@ -5,12 +5,11 @@
 //  Created by Anastasia Tyutinova on 24/7/2568 BE.
 //
 
-// TODO: - Логин и пароль для единственного входа + ошибка при несовпадении
-// TODO: - До нажатия на клавиатуру кнопка Войти должна быть забелённой
+// TODO: - Пофиксить ограничения и ошибку при несовпадении логина или пароля
 
 import UIKit
 
-final class AuthViewController: UIViewController {
+final class AuthViewController: UIViewController, UITextFieldDelegate {
     
     private var bottomConstraint: NSLayoutConstraint!
     var presenter: AuthPresenterProtocol!
@@ -43,22 +42,37 @@ final class AuthViewController: UIViewController {
         button.backgroundColor = .systemPink
         button.tintColor = .white
         button.layer.cornerRadius = 20
-        button.addTarget(AuthViewController.self, action: #selector(loginTapped), for: .touchUpInside)
+        button.addTarget(self, action: #selector(loginTapped), for: .touchUpInside)
         return button
     }()
     
-    private let errorBanner: UILabel = {
-            let label = UILabel()
-            label.backgroundColor = UIColor(red: 1, green: 0.9, blue: 0.9, alpha: 1)
-            label.textColor = .systemRed
-            label.text = "Неверный логин или пароль"
-            label.font = .systemFont(ofSize: 14, weight: .medium)
-            label.textAlignment = .center
-            label.layer.cornerRadius = 16
-            label.layer.masksToBounds = true
-            label.isHidden = true
-            return label
-        }()
+    private let errorBannerView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        view.layer.cornerRadius = 20
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOpacity = 0.1
+        view.layer.shadowOffset = CGSize(width: 0, height: 2)
+        view.layer.shadowRadius = 4
+        view.isHidden = true
+        return view
+    }()
+
+    private let errorLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Неверный логин или пароль"
+        label.textColor = .systemRed
+        label.font = .systemFont(ofSize: 14, weight: .medium)
+        return label
+    }()
+
+    private let errorCloseButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(UIImage(systemName: "xmark"), for: .normal)
+        button.tintColor = .systemRed
+        button.addTarget(self, action: #selector(hideErrorBanner), for: .touchUpInside)
+        return button
+    }()
     
     private let bottomPanelView: UIView = {
         let view = UIView()
@@ -75,6 +89,16 @@ final class AuthViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupLayout()
+        
+        emailField.textField.delegate = self
+        passwordField.textField.delegate = self
+        
+        emailField.textField.addTarget(self, action: #selector(textFieldsChanged), for: .editingChanged)
+        passwordField.textField.addTarget(self, action: #selector(textFieldsChanged), for: .editingChanged)
+        
+        loginButton.isEnabled = false
+        loginButton.alpha = 0.5
+        
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(keyboardFrameWillChange),
@@ -89,14 +113,12 @@ final class AuthViewController: UIViewController {
     
     private func setupLayout() {
         view.backgroundColor = .systemBackground
-        [authLabel, logoImageView, emailField, passwordField, errorBanner].forEach { $0.translatesAutoresizingMaskIntoConstraints = false;
+        [authLabel, logoImageView, emailField, passwordField, errorBannerView, bottomPanelView, loginButton].forEach { $0.translatesAutoresizingMaskIntoConstraints = false;
             view.addSubview($0)
         }
-        
-        view.addSubview(bottomPanelView)
-        bottomPanelView.translatesAutoresizingMaskIntoConstraints = false
+        errorBannerView.addSubview(errorLabel)
+        errorBannerView.addSubview(errorCloseButton)
         bottomPanelView.addSubview(loginButton)
-        loginButton.translatesAutoresizingMaskIntoConstraints = false
         
         bottomConstraint = bottomPanelView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         
@@ -130,10 +152,18 @@ final class AuthViewController: UIViewController {
             loginButton.trailingAnchor.constraint(equalTo: bottomPanelView.trailingAnchor, constant: -16),
             loginButton.heightAnchor.constraint(equalToConstant: 48),
             
-            errorBanner.topAnchor.constraint(equalTo: authLabel.bottomAnchor, constant: 8),
-            errorBanner.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            errorBanner.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            errorBanner.heightAnchor.constraint(equalToConstant: 36)
+            errorBannerView.topAnchor.constraint(equalTo: authLabel.bottomAnchor, constant: -12),
+            errorBannerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            errorBannerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            errorBannerView.heightAnchor.constraint(equalToConstant: 48),
+            
+            errorLabel.centerYAnchor.constraint(equalTo: errorBannerView.centerYAnchor),
+            errorLabel.leadingAnchor.constraint(equalTo: errorBannerView.leadingAnchor, constant: 16),
+            
+            errorCloseButton.centerYAnchor.constraint(equalTo: errorBannerView.centerYAnchor),
+            errorCloseButton.trailingAnchor.constraint(equalTo: errorBannerView.trailingAnchor, constant: -16),
+            errorCloseButton.widthAnchor.constraint(equalToConstant: 24),
+            errorCloseButton.heightAnchor.constraint(equalToConstant: 24)
         ])
     }
     
@@ -160,6 +190,15 @@ final class AuthViewController: UIViewController {
         })
     }
     
+    @objc private func textFieldsChanged() {
+        let email = emailField.textField.text ?? ""
+        let password = passwordField.textField.text ?? ""
+
+        let isFormFilled = !email.isEmpty && !password.isEmpty
+        loginButton.isEnabled = isFormFilled
+        loginButton.alpha = isFormFilled ? 1.0 : 0.5
+    }
+    
     @objc private func dismissKeyboard() {
         view.endEditing(true)
     }
@@ -169,14 +208,16 @@ final class AuthViewController: UIViewController {
 
 extension AuthViewController: AuthViewProtocol {
     func showError(message: String) {
-        errorBanner.text = message
-        errorBanner.isHidden = false
+        errorLabel.text = message
+        errorBannerView.isHidden = false
     }
 
     func showSuccess() {
-        errorBanner.isHidden = true
-        let alert = UIAlertController(title: "Успех", message: "Вы вошли!", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Ок", style: .default))
-        present(alert, animated: true)
+        errorBannerView.isHidden = true
+        // сделать дальнейший переход, когда появится main
+    }
+
+    @objc private func hideErrorBanner() {
+        errorBannerView.isHidden = true
     }
 }
