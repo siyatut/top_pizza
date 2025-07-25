@@ -5,7 +5,7 @@
 //  Created by Anastasia Tyutinova on 24/7/2568 BE.
 //
 
-// TODO: - №1 Пофиксить проблему с уплыванием лейбла «Авторизация» при открытии клавиатуры
+// TODO: - №1 Пофиксить проблему с накладыванием лого на лейбл на маленьких экранах
 // TODO: - №2 Пофиксить сброс курсора с текстового поля при нажатии на значок скрытия/показа пароля
 // TODO: — №3 Значок глаза как будто слегка сплющен, посмотреть на других устройствах
 // TODO: — №4 Удалить портретную ориентацию
@@ -129,66 +129,80 @@ final class AuthViewController: UIViewController, UITextFieldDelegate {
     
     private func setupLayout() {
         view.backgroundColor = .systemBackground
-        [authLabel, logoImageView, emailField, passwordField, errorBannerView, bottomPanelView].forEach { $0.translatesAutoresizingMaskIntoConstraints = false;
+
+        [authLabel, logoImageView, emailField, passwordField, bottomPanelView].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)
         }
+
+        errorBannerView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(errorBannerView)
         errorBannerView.addSubview(errorLabel)
         errorLabel.translatesAutoresizingMaskIntoConstraints = false
         errorBannerView.addSubview(errorCloseButton)
         errorCloseButton.translatesAutoresizingMaskIntoConstraints = false
+
         bottomPanelView.addSubview(loginButton)
         loginButton.translatesAutoresizingMaskIntoConstraints = false
-        
+
         bottomConstraint = bottomPanelView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        bottomConstraint.isActive = true
         
         logoTopConstraint = logoImageView.topAnchor.constraint(equalTo: authLabel.bottomAnchor, constant: 135)
+        logoTopConstraint.priority = .defaultLow
         logoTopConstraint.isActive = true
         
-        passwordBottomConstraint = passwordField.bottomAnchor.constraint(equalTo: bottomPanelView.topAnchor, constant: -234)
-        passwordBottomConstraint.isActive = true
+        let logoHeight = logoImageView.heightAnchor.constraint(equalToConstant: 103)
+        logoHeight.priority = .defaultLow
+        logoHeight.isActive = true
         
+        authLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+        
+        passwordBottomConstraint = passwordField.bottomAnchor.constraint(equalTo: bottomPanelView.topAnchor, constant: -234)
+        passwordBottomConstraint.priority = .defaultHigh
+        passwordBottomConstraint.isActive = true
+
         NSLayoutConstraint.activate([
-            
             authLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             authLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 14),
-            
+
             logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            logoImageView.heightAnchor.constraint(equalToConstant: 103),
-            
+
             emailField.topAnchor.constraint(equalTo: logoImageView.bottomAnchor, constant: 32),
             emailField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             emailField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             emailField.heightAnchor.constraint(equalToConstant: 50),
-            
+
             passwordField.topAnchor.constraint(equalTo: emailField.bottomAnchor, constant: 20),
             passwordField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             passwordField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             passwordField.heightAnchor.constraint(equalToConstant: 50),
-            
+
             bottomPanelView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomPanelView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bottomConstraint,
             bottomPanelView.heightAnchor.constraint(equalToConstant: 88),
-            
+
             loginButton.topAnchor.constraint(equalTo: bottomPanelView.topAnchor, constant: 16),
             loginButton.leadingAnchor.constraint(equalTo: bottomPanelView.leadingAnchor, constant: 16),
             loginButton.trailingAnchor.constraint(equalTo: bottomPanelView.trailingAnchor, constant: -16),
             loginButton.heightAnchor.constraint(equalToConstant: 48),
-            
+
             errorBannerView.topAnchor.constraint(equalTo: authLabel.topAnchor),
             errorBannerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             errorBannerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             errorBannerView.heightAnchor.constraint(equalToConstant: 48),
-            
+
             errorLabel.centerYAnchor.constraint(equalTo: errorBannerView.centerYAnchor),
             errorLabel.centerXAnchor.constraint(equalTo: errorBannerView.centerXAnchor),
-            
+
             errorCloseButton.centerYAnchor.constraint(equalTo: errorBannerView.centerYAnchor),
             errorCloseButton.trailingAnchor.constraint(equalTo: errorBannerView.trailingAnchor, constant: -16),
             errorCloseButton.widthAnchor.constraint(equalToConstant: 18),
-            errorCloseButton.heightAnchor.constraint(equalToConstant: 18)
+            errorCloseButton.heightAnchor.constraint(equalToConstant: 18),
         ])
     }
+
+     
     
     @objc private func loginTapped() {
         presenter.login(email: emailField.textField.text, password: passwordField.textField.text)
