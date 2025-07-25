@@ -5,13 +5,25 @@
 //  Created by Anastasia Tyutinova on 25/7/2568 BE.
 //
 
+// TODO: - №1 Пофиксить краш при перещёлкивании между категориями меню
+// TODO: - №2 Добавить кнопку с городами с левый верхний угол
+// TODO: - №3 Разделить этот модуль по папкам
+// TODO: - №4 Меню с категориями не прилипло к верху, а ещё поработать с цветами
+
 import UIKit
 
 final class MenuViewController: UIViewController, MenuView {
     
     private var presenter: MenuPresenter!
     private var showSuccessBanner: Bool
-    private var pizzas: [Pizza] = []
+    private var menuSections: [MenuSection] = [
+        MenuSection(title: "Пицца", items: []),
+        MenuSection(title: "Комбо", items: []),
+        MenuSection(title: "Десерты", items: []),
+        MenuSection(title: "Напитки", items: [])
+    ]
+    
+    private let categoryView = CategorySelectorView()
     
     private let tableView: UITableView = {
         let table = UITableView()
@@ -73,6 +85,9 @@ final class MenuViewController: UIViewController, MenuView {
         
         let bannerView = BannerView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 160))
         tableView.tableHeaderView = bannerView
+        
+        categoryView.delegate = self
+        tableView.tableHeaderView = createHeaderView()
     }
     
     private func setupTableView() {
@@ -123,8 +138,36 @@ final class MenuViewController: UIViewController, MenuView {
         }
     }
     
+    private func createHeaderView() -> UIView {
+        let container = UIView()
+        let banner = BannerView(frame: .zero)
+        banner.translatesAutoresizingMaskIntoConstraints = false
+        
+        categoryView.translatesAutoresizingMaskIntoConstraints = false
+        
+        container.addSubview(banner)
+        container.addSubview(categoryView)
+        
+        NSLayoutConstraint.activate([
+            banner.topAnchor.constraint(equalTo: container.topAnchor),
+            banner.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            banner.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            banner.heightAnchor.constraint(equalToConstant: 160),
+            
+            categoryView.topAnchor.constraint(equalTo: banner.bottomAnchor),
+            categoryView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            categoryView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            categoryView.heightAnchor.constraint(equalToConstant: 44),
+            categoryView.bottomAnchor.constraint(equalTo: container.bottomAnchor)
+        ])
+        
+        container.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 160 + 44)
+        return container
+    }
+    
+    
     func display(pizzas: [Pizza]) {
-        self.pizzas = pizzas
+        menuSections[0] = MenuSection(title: "Пицца", items: pizzas)
         tableView.reloadData()
     }
     
@@ -139,15 +182,27 @@ extension MenuViewController: UITableViewDataSource, UITableViewDelegate {
         return 156
     }
     
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return menuSections.count
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return pizzas.count
+        return menuSections[section].items.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "PizzaCell", for: indexPath) as? PizzaCell else {
             return UITableViewCell()
         }
-        cell.configure(with: pizzas[indexPath.row])
+        let pizza = menuSections[indexPath.section].items[indexPath.row]
+        cell.configure(with: pizza)
         return cell
+    }
+}
+
+extension MenuViewController: CategorySelectorDelegate {
+    func didSelectCategory(index: Int) {
+        let indexPath = IndexPath(row: 0, section: index)
+        tableView.scrollToRow(at: indexPath, at: .top, animated: true)
     }
 }
