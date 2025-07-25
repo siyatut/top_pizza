@@ -64,10 +64,15 @@ final class MenuViewController: UIViewController, MenuView {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        
         presenter = MenuPresenter(view: self)
         presenter.loadMenu()
-        setupSuccessBanner()
+        
         setupTableView()
+        setupSuccessBanner()
+        
+        let bannerView = BannerView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 160))
+        tableView.tableHeaderView = bannerView
     }
     
     private func setupTableView() {
@@ -89,8 +94,10 @@ final class MenuViewController: UIViewController, MenuView {
         ])
     }
     private func setupSuccessBanner() {
-        successBanner.translatesAutoresizingMaskIntoConstraints = false
+        
         view.addSubview(successBanner)
+        view.bringSubviewToFront(successBanner)
+        successBanner.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             successBanner.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),

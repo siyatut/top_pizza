@@ -9,7 +9,7 @@ struct Pizza: Decodable {
     let id: Int
     let title: String
     let description: String
-    let price: Int
+    let price: Double
     let imageUrl: String
 
     enum CodingKeys: String, CodingKey {
