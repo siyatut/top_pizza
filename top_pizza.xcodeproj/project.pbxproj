@@ -34,7 +34,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
-				Modules/Menu/Untitled.swift,
 			);
 			target = 5207761B2E3123530080715D /* top_pizza */;
 		};
