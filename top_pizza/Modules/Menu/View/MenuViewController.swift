@@ -11,9 +11,15 @@ final class MenuViewController: UIViewController, MenuView {
     
     private var presenter: MenuPresenter!
     private var showSuccessBanner: Bool
-    
-    private let tableView = UITableView()
     private var pizzas: [Pizza] = []
+    
+    private let tableView: UITableView = {
+        let table = UITableView()
+        table.separatorStyle = .none
+        table.showsVerticalScrollIndicator = false
+        table.backgroundColor = .systemBackground
+        return table
+    }()
     
     private let successBanner: UIView = {
         let view = UIView()
@@ -60,16 +66,18 @@ final class MenuViewController: UIViewController, MenuView {
         view.backgroundColor = .systemBackground
         presenter = MenuPresenter(view: self)
         presenter.loadMenu()
-        setupTableView()
         setupSuccessBanner()
+        setupTableView()
     }
     
     private func setupTableView() {
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.separatorStyle = .none
-        tableView.backgroundColor = .systemBackground
+        
+        tableView.contentInset.top = showSuccessBanner ? 64 : 0
+        
         tableView.register(PizzaCell.self, forCellReuseIdentifier: "PizzaCell")
         view.addSubview(tableView)
         
