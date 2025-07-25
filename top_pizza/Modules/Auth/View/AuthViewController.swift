@@ -254,7 +254,10 @@ extension AuthViewController: AuthViewProtocol {
     
     func showSuccess() {
         errorBannerView.isHidden = true
-        // сделать дальнейший переход, когда появится main
+        
+        let tabBar = MainTabBarController(showSuccessBanner: true)
+        tabBar.modalPresentationStyle = .fullScreen
+        present(tabBar, animated: true)
     }
     
     @objc private func hideErrorBanner() {

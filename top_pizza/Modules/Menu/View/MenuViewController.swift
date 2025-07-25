@@ -10,16 +10,58 @@ import UIKit
 final class MenuViewController: UIViewController, MenuView {
     
     private var presenter: MenuPresenter!
+    private var showSuccessBanner: Bool
     
     private let tableView = UITableView()
     private var pizzas: [Pizza] = []
-
+    
+    private let successBanner: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor.systemGreen.withAlphaComponent(0.1)
+        view.layer.cornerRadius = 16
+        view.isHidden = true
+        
+        let label = UILabel()
+        label.text = "Вход выполнен успешно"
+        label.textColor = .systemGreen
+        label.font = .systemFont(ofSize: 16, weight: .medium)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(label)
+        
+        let check = UIImageView(image: UIImage(systemName: "checkmark.circle.fill"))
+        check.tintColor = .systemGreen
+        check.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(check)
+        
+        NSLayoutConstraint.activate([
+            label.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            label.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
+            check.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            check.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            check.widthAnchor.constraint(equalToConstant: 20),
+            check.heightAnchor.constraint(equalToConstant: 20)
+        ])
+        
+        return view
+    }()
+    
+    init(showSuccessBanner: Bool = false) {
+        self.showSuccessBanner = showSuccessBanner
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         presenter = MenuPresenter(view: self)
         presenter.loadMenu()
         setupTableView()
+        setupSuccessBanner()
     }
     
     private func setupTableView() {
@@ -30,7 +72,7 @@ final class MenuViewController: UIViewController, MenuView {
         tableView.backgroundColor = .systemBackground
         tableView.register(PizzaCell.self, forCellReuseIdentifier: "PizzaCell")
         view.addSubview(tableView)
-
+        
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -38,12 +80,39 @@ final class MenuViewController: UIViewController, MenuView {
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
-
+    private func setupSuccessBanner() {
+        successBanner.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(successBanner)
+        
+        NSLayoutConstraint.activate([
+            successBanner.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
+            successBanner.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            successBanner.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            successBanner.heightAnchor.constraint(equalToConstant: 48)
+        ])
+        
+        if showSuccessBanner {
+            successBanner.alpha = 0
+            successBanner.isHidden = false
+            UIView.animate(withDuration: 0.3) {
+                self.successBanner.alpha = 1
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                UIView.animate(withDuration: 0.3, animations: {
+                    self.successBanner.alpha = 0
+                }) { _ in
+                    self.successBanner.isHidden = true
+                }
+            }
+        }
+    }
+    
     func display(pizzas: [Pizza]) {
         self.pizzas = pizzas
         tableView.reloadData()
     }
-
+    
     func display(error: String) {
         print("Error loading pizzas: \(error)")
     }
@@ -53,7 +122,7 @@ extension MenuViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return pizzas.count
     }
-
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "PizzaCell", for: indexPath) as? PizzaCell else {
             return UITableViewCell()
