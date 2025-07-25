@@ -5,7 +5,7 @@
 //  Created by Anastasia Tyutinova on 24/7/2568 BE.
 //
 
-// TODO: - №1 Пофиксить проблему с уплыванием лейбла «Авторизация» при открытии клавиатуры, а также смены локации логотипа после этого
+// TODO: - №1 Пофиксить проблему с уплыванием лейбла «Авторизация» при открытии клавиатуры
 // TODO: - №2 Пофиксить сброс курсора с текстового поля при нажатии на значок скрытия/показа пароля
 // TODO: — №3 Значок глаза как будто слегка сплющен, посмотреть на других устройствах
 // TODO: — №4 Удалить портретную ориентацию
@@ -16,6 +16,9 @@ import UIKit
 final class AuthViewController: UIViewController, UITextFieldDelegate {
     
     private var bottomConstraint: NSLayoutConstraint!
+    private var logoTopConstraint: NSLayoutConstraint!
+    private var passwordBottomConstraint: NSLayoutConstraint!
+    
     var presenter: AuthPresenterProtocol!
     
     private let authLabel: UILabel = {
@@ -136,15 +139,21 @@ final class AuthViewController: UIViewController, UITextFieldDelegate {
         bottomPanelView.addSubview(loginButton)
         loginButton.translatesAutoresizingMaskIntoConstraints = false
         
-        bottomConstraint = bottomPanelView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        bottomConstraint = bottomPanelView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        
+        logoTopConstraint = logoImageView.topAnchor.constraint(equalTo: authLabel.bottomAnchor, constant: 135)
+        logoTopConstraint.isActive = true
+        
+        passwordBottomConstraint = passwordField.bottomAnchor.constraint(equalTo: bottomPanelView.topAnchor, constant: -234)
+        passwordBottomConstraint.isActive = true
         
         NSLayoutConstraint.activate([
             
             authLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            authLabel.topAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            authLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 14),
             
             logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            logoImageView.topAnchor.constraint(lessThanOrEqualTo: authLabel.bottomAnchor, constant: 121),
+            logoImageView.heightAnchor.constraint(equalToConstant: 103),
             
             emailField.topAnchor.constraint(equalTo: logoImageView.bottomAnchor, constant: 32),
             emailField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -156,12 +165,10 @@ final class AuthViewController: UIViewController, UITextFieldDelegate {
             passwordField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             passwordField.heightAnchor.constraint(equalToConstant: 50),
             
-            passwordField.bottomAnchor.constraint(equalTo: bottomPanelView.topAnchor, constant: -79),
-            
             bottomPanelView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomPanelView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             bottomConstraint,
-            bottomPanelView.heightAnchor.constraint(equalToConstant: 118),
+            bottomPanelView.heightAnchor.constraint(equalToConstant: 88),
             
             loginButton.topAnchor.constraint(equalTo: bottomPanelView.topAnchor, constant: 16),
             loginButton.leadingAnchor.constraint(equalTo: bottomPanelView.leadingAnchor, constant: 16),
@@ -193,8 +200,11 @@ final class AuthViewController: UIViewController, UITextFieldDelegate {
               let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double,
               let curveValue = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt else { return }
         
-        let keyboardHeight = max(view.frame.height - keyboardFrame.origin.y, 0)
-        bottomConstraint.constant = -keyboardHeight
+        let keyboardVisible = keyboardFrame.origin.y < UIScreen.main.bounds.height
+        bottomConstraint.constant = -max(view.frame.height - keyboardFrame.origin.y, 0)
+        
+        logoTopConstraint.constant = keyboardVisible ? 14 : 135
+        passwordBottomConstraint.constant = keyboardVisible ? -79 : -234
         
         let options = UIView.AnimationOptions(rawValue: curveValue << 16)
         
