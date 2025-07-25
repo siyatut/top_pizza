@@ -40,32 +40,32 @@ final class PizzaCell: UITableViewCell {
         pizzaImageView.clipsToBounds = true
         pizzaImageView.layer.cornerRadius = 10
 
-        titleLabel.font = .boldSystemFont(ofSize: 16)
-        descriptionLabel.font = .systemFont(ofSize: 14)
+        titleLabel.font = .boldSystemFont(ofSize: 17)
+        descriptionLabel.font = .systemFont(ofSize: 13)
         descriptionLabel.numberOfLines = 2
         descriptionLabel.textColor = .gray
 
         priceButton.setTitleColor(.systemPink, for: .normal)
-        priceButton.layer.cornerRadius = 10
+        priceButton.layer.cornerRadius = 6
         priceButton.layer.borderColor = UIColor.systemPink.cgColor
         priceButton.layer.borderWidth = 1
 
         NSLayoutConstraint.activate([
             pizzaImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             pizzaImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            pizzaImageView.widthAnchor.constraint(equalToConstant: 80),
-            pizzaImageView.heightAnchor.constraint(equalToConstant: 80),
+            pizzaImageView.widthAnchor.constraint(equalToConstant: 132),
+            pizzaImageView.heightAnchor.constraint(equalToConstant: 132),
 
             titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-            titleLabel.leadingAnchor.constraint(equalTo: pizzaImageView.trailingAnchor, constant: 16),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            titleLabel.leadingAnchor.constraint(equalTo: pizzaImageView.trailingAnchor, constant: 32),
+            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -24),
 
             descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
             descriptionLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
             descriptionLabel.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor),
 
             priceButton.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 8),
-            priceButton.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
+            priceButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             priceButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
             priceButton.widthAnchor.constraint(equalToConstant: 100),
             priceButton.heightAnchor.constraint(equalToConstant: 30)

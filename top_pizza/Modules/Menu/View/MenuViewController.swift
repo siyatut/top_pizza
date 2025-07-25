@@ -134,6 +134,11 @@ final class MenuViewController: UIViewController, MenuView {
 }
 
 extension MenuViewController: UITableViewDataSource, UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 156
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return pizzas.count
     }
