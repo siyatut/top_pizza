@@ -7,7 +7,7 @@
 
 // TODO: - №2 Добавить кнопку с городами с левый верхний угол
 // TODO: - №3 Разделить этот модуль по папкам
-// TODO: - №4 Меню с категориями не прилипло к верху, а ещё поработать с цветами
+// TODO: - №4 Цвета меню с категориями
 
 import UIKit
 
@@ -86,7 +86,6 @@ final class MenuViewController: UIViewController, MenuView {
         tableView.tableHeaderView = bannerView
         
         categoryView.delegate = self
-        tableView.tableHeaderView = createHeaderView()
     }
     
     private func setupTableView() {
@@ -95,9 +94,9 @@ final class MenuViewController: UIViewController, MenuView {
         tableView.dataSource = self
         tableView.delegate = self
         
-        tableView.contentInset.top = showSuccessBanner ? 64 : 0
+       // tableView.contentInset.top = showSuccessBanner ? 64 : 0
         
-        tableView.register(MenuItemCell.self, forCellReuseIdentifier: "PizzaCell")
+        tableView.register(MenuItemCell.self, forCellReuseIdentifier: "MenuItemCell")
         view.addSubview(tableView)
         
         NSLayoutConstraint.activate([
@@ -114,7 +113,7 @@ final class MenuViewController: UIViewController, MenuView {
         successBanner.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            successBanner.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
+            successBanner.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: -20),
             successBanner.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             successBanner.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             successBanner.heightAnchor.constraint(equalToConstant: 48)
@@ -136,34 +135,6 @@ final class MenuViewController: UIViewController, MenuView {
             }
         }
     }
-    
-    private func createHeaderView() -> UIView {
-        let container = UIView()
-        let banner = BannerView(frame: .zero)
-        banner.translatesAutoresizingMaskIntoConstraints = false
-        
-        categoryView.translatesAutoresizingMaskIntoConstraints = false
-        
-        container.addSubview(banner)
-        container.addSubview(categoryView)
-        
-        NSLayoutConstraint.activate([
-            banner.topAnchor.constraint(equalTo: container.topAnchor),
-            banner.leadingAnchor.constraint(equalTo: container.leadingAnchor),
-            banner.trailingAnchor.constraint(equalTo: container.trailingAnchor),
-            banner.heightAnchor.constraint(equalToConstant: 160),
-            
-            categoryView.topAnchor.constraint(equalTo: banner.bottomAnchor),
-            categoryView.leadingAnchor.constraint(equalTo: container.leadingAnchor),
-            categoryView.trailingAnchor.constraint(equalTo: container.trailingAnchor),
-            categoryView.heightAnchor.constraint(equalToConstant: 44),
-            categoryView.bottomAnchor.constraint(equalTo: container.bottomAnchor)
-        ])
-        
-        container.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 160 + 44)
-        return container
-    }
-    
     
     func display(menuItems: [MenuItem]) {
         let chunkSize = menuItems.count / 4
@@ -195,12 +166,28 @@ extension MenuViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "PizzaCell", for: indexPath) as? MenuItemCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "MenuItemCell", for: indexPath) as? MenuItemCell else {
             return UITableViewCell()
         }
         let pizza = menuSections[indexPath.section].items[indexPath.row]
         cell.configure(with: pizza)
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        return section == 0 ? categoryView : nil
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return section == 0 ? 44 : 0
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offset = scrollView.contentOffset.y
+        categoryView.layer.shadowColor = UIColor.black.cgColor
+        categoryView.layer.shadowOffset = CGSize(width: 0, height: 2)
+        categoryView.layer.shadowRadius = 4
+        categoryView.layer.shadowOpacity = offset > 160 ? 0.1 : 0
     }
 }
 
