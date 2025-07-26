@@ -12,10 +12,10 @@ enum AuthAssembly {
         let view = AuthViewController()
         let presenter = AuthPresenter(view: view)
         let router = AuthRouter()
-
+        
         view.presenter = presenter
         presenter.router = router
-
+        
         return view
     }
 }

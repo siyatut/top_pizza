@@ -13,14 +13,21 @@ protocol MenuView: AnyObject {
 }
 
 final class MenuPresenter {
+    
+    // MARK: - Properties
+    
     private weak var view: MenuView?
     private let service: PizzaServiceProtocol
-
+    
+    // MARK: - Initialization
+    
     init(view: MenuView, service: PizzaServiceProtocol = PizzaService()) {
         self.view = view
         self.service = service
     }
-
+    
+    // MARK: - Public Methods
+    
     func loadMenu() {
         service.fetchPizzas { [weak self] result in
             DispatchQueue.main.async {

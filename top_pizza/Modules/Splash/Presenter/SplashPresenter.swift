@@ -17,13 +17,20 @@ protocol SplashPresenterProtocol: AnyObject {
 }
 
 final class SplashPresenter: SplashPresenterProtocol {
+    
+    // MARK: - Properties
+    
     weak var view: SplashViewProtocol?
     var router: SplashRouterProtocol!
-
+    
+    // MARK: - Initialization
+    
     init(view: SplashViewProtocol) {
         self.view = view
     }
-
+    
+    // MARK: - Lifecycle
+    
     func viewDidLoad() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
             self.view?.navigateToAuth()

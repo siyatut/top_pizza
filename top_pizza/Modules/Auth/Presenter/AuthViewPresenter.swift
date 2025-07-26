@@ -17,14 +17,20 @@ protocol AuthPresenterProtocol: AnyObject {
 }
 
 final class AuthPresenter: AuthPresenterProtocol {
-
+    
+    // MARK: - Properties
+    
     weak var view: AuthViewProtocol?
     var router: AuthRouterProtocol!
-
+    
+    // MARK: - Initialization
+    
     init(view: AuthViewProtocol) {
         self.view = view
     }
-
+    
+    // MARK: - AuthPresenterProtocol
+    
     func login(email: String?, password: String?) {
         guard let email = email?.trimmingCharacters(in: .whitespacesAndNewlines),
               let password = password?.trimmingCharacters(in: .whitespacesAndNewlines),
@@ -32,12 +38,12 @@ final class AuthPresenter: AuthPresenterProtocol {
             view?.showError(message: "Заполните все поля")
             return
         }
-
+        
         guard email == "Qwerty123", password == "Qwerty123" else {
             view?.showError(message: "Неверный логин или пароль")
             return
         }
-
+        
         view?.showSuccess()
     }
 }

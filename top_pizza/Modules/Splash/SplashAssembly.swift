@@ -8,15 +8,15 @@
 import UIKit
 
 enum SplashAssembly {
-
+    
     static func createSplashModule() -> UIViewController {
         let view = SplashViewController()
         let presenter = SplashPresenter(view: view)
         let router = SplashRouter()
-
+        
         view.presenter = presenter
         presenter.router = router
-
+        
         return view
     }
 }

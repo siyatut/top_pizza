@@ -8,7 +8,9 @@
 import UIKit
 
 final class BannerCell: UICollectionViewCell {
-
+    
+    // MARK: - Properties
+    
     private let imageView: UIImageView = {
         let image = UIImageView()
         image.contentMode = .scaleAspectFill
@@ -16,12 +18,16 @@ final class BannerCell: UICollectionViewCell {
         image.clipsToBounds = true
         return image
     }()
-
+    
+    // MARK: - Initialization
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         contentView.addSubview(imageView)
         imageView.translatesAutoresizingMaskIntoConstraints = false
-
+        
+        // MARK: - Constraints
+        
         NSLayoutConstraint.activate([
             imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
@@ -29,11 +35,13 @@ final class BannerCell: UICollectionViewCell {
             imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
         ])
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
+    // MARK: - Configuration
+    
     func configure(with url: String) {
         imageView.loadImage(from: url)
     }

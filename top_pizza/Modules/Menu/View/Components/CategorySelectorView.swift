@@ -12,17 +12,19 @@ protocol CategorySelectorDelegate: AnyObject {
 }
 
 final class CategorySelectorView: UIView {
-
+    
+    // MARK: - Properties
+    
     private let categories = ["Пицца", "Комбо", "Десерты", "Напитки"]
     private var selectedIndex: IndexPath = IndexPath(item: 0, section: 0)
     weak var delegate: CategorySelectorDelegate?
-
+    
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.minimumLineSpacing = 12
         layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
-
+        
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collection.register(CategoryCell.self, forCellWithReuseIdentifier: "CategoryCell")
         collection.dataSource = self
@@ -30,7 +32,9 @@ final class CategorySelectorView: UIView {
         collection.showsHorizontalScrollIndicator = false
         return collection
     }()
-
+    
+    // MARK: - Initialization
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         addSubview(collectionView)
@@ -42,17 +46,19 @@ final class CategorySelectorView: UIView {
             collectionView.trailingAnchor.constraint(equalTo: trailingAnchor)
         ])
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError()
     }
 }
 
+// MARK: - UICollectionViewDataSource & UICollectionViewDelegateFlowLayout
+
 extension CategorySelectorView: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return categories.count
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: "CategoryCell",
@@ -63,13 +69,13 @@ extension CategorySelectorView: UICollectionViewDataSource, UICollectionViewDele
         cell.configure(with: categories[indexPath.item], isSelected: selectedIndex == indexPath)
         return cell
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         selectedIndex = indexPath
         collectionView.reloadData()
         delegate?.didSelectCategory(index: indexPath.item)
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         let label = UILabel()

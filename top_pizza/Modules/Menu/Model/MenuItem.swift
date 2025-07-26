@@ -6,12 +6,17 @@
 //
 
 struct MenuItem: Decodable {
+    
+    // MARK: - Properties
+    
     let id: Int
     let title: String
     let description: String
     let price: Double
     let imageUrl: String
-
+    
+    // MARK: - CodingKeys
+    
     enum CodingKeys: String, CodingKey {
         case id, title, description, price
         case imageUrl = "thumbnail"
@@ -19,5 +24,6 @@ struct MenuItem: Decodable {
 }
 
 struct PizzaResponse: Decodable {
+    
     let products: [MenuItem]
 }
