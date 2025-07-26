@@ -11,6 +11,7 @@ import UIKit
 
 final class MenuViewController: UIViewController, MenuView {
     
+    private var cityButton: UIButton?
     private var presenter: MenuPresenter!
     private var showSuccessBanner: Bool
     private var menuSections: [MenuSection] = [
@@ -79,6 +80,7 @@ final class MenuViewController: UIViewController, MenuView {
         
         setupTableView()
         setupSuccessBanner()
+        setupNavigationBar()
         
         let bannerView = BannerView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 160))
         tableView.tableHeaderView = bannerView
@@ -132,6 +134,30 @@ final class MenuViewController: UIViewController, MenuView {
         }
     }
     
+    private func setupNavigationBar() {
+        let button = UIButton(type: .system)
+        button.setTitle("Москва", for: .normal)
+        button.setTitleColor(.label, for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 17, weight: .medium)
+
+        let icon = UIImage(systemName: "chevron.down")?.withConfiguration(
+            UIImage.SymbolConfiguration(pointSize: 13, weight: .medium)
+        )
+        button.setImage(icon, for: .normal)
+        button.tintColor = .label
+
+        button.semanticContentAttribute = .forceRightToLeft
+        button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0)
+        button.contentHorizontalAlignment = .leading
+
+        button.sizeToFit()
+        button.addTarget(self, action: #selector(cityButtonTapped), for: .touchUpInside)
+
+        cityButton = button
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: button)
+    }
+
+    
     func display(menuItems: [MenuItem]) {
         let chunkSize = menuItems.count / 4
         menuSections[0] = MenuSection(title: "Пицца", items: Array(menuItems[0..<chunkSize]))
@@ -145,6 +171,28 @@ final class MenuViewController: UIViewController, MenuView {
     func display(error: String) {
         print("Error loading pizzas: \(error)")
     }
+    
+    @objc private func cityButtonTapped() {
+        let alert = UIAlertController(title: "Выберите город", message: nil, preferredStyle: .actionSheet)
+
+        let cities = ["Москва", "Питер", "Казань", "Калуга"]
+        for city in cities {
+            let action = UIAlertAction(title: city, style: .default) { _ in
+                self.cityButton?.setTitle(city, for: .normal)
+            }
+            alert.addAction(action)
+        }
+
+        alert.addAction(UIAlertAction(title: "Отмена", style: .cancel, handler: nil))
+
+        if let button = cityButton, let popover = alert.popoverPresentationController {
+            popover.sourceView = button
+            popover.sourceRect = button.bounds
+        }
+
+        present(alert, animated: true)
+    }
+
 }
 
 extension MenuViewController: UITableViewDataSource, UITableViewDelegate {
