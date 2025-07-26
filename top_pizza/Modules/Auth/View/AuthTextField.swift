@@ -8,12 +8,12 @@
 import UIKit
 
 final class AuthTextField: UIView {
-    
+
     let textField = UITextField()
-    
+
     private let iconImageView: UIImageView
     private let eyeButton: UIButton?
-    
+
     init(placeholder: String, systemImageName: String, isSecure: Bool = false) {
         iconImageView = UIImageView(image: UIImage(systemName: systemImageName))
         iconImageView.tintColor = .systemGray
@@ -24,24 +24,24 @@ final class AuthTextField: UIView {
             eyeButton = nil
         }
         super.init(frame: .zero)
-        
+
         backgroundColor = .systemBackground
         layer.cornerRadius = 20
         layer.borderWidth = 1
         layer.borderColor = UIColor.systemGray.cgColor
-        
+
         textField.placeholder = placeholder
         textField.isSecureTextEntry = isSecure
         textField.borderStyle = .none
         textField.autocapitalizationType = .sentences
         textField.backgroundColor = .systemBackground
         textField.tintColor = .systemGray
-        
+
         iconImageView.translatesAutoresizingMaskIntoConstraints = false
         textField.translatesAutoresizingMaskIntoConstraints = false
         addSubview(iconImageView)
         addSubview(textField)
-        
+
         if let eye = eyeButton {
             eye.translatesAutoresizingMaskIntoConstraints = false
             eye.tintColor = .systemGray
@@ -55,7 +55,7 @@ final class AuthTextField: UIView {
                 eye.heightAnchor.constraint(equalToConstant: 18)
             ])
         }
-        
+
         NSLayoutConstraint.activate([
             iconImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
             iconImageView.centerYAnchor.constraint(equalTo: centerYAnchor),

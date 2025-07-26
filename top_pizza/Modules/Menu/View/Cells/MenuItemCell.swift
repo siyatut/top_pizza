@@ -8,7 +8,7 @@
 import UIKit
 
 final class MenuItemCell: UITableViewCell {
-    
+
     private let itemImageView = UIImageView()
     private let titleLabel = UILabel()
     private let descriptionLabel = UILabel()

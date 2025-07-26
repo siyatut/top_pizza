@@ -21,4 +21,3 @@ struct MenuItem: Decodable {
 struct PizzaResponse: Decodable {
     let products: [MenuItem]
 }
-

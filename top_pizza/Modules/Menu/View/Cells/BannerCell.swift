@@ -10,11 +10,11 @@ import UIKit
 final class BannerCell: UICollectionViewCell {
 
     private let imageView: UIImageView = {
-        let iv = UIImageView()
-        iv.contentMode = .scaleAspectFill
-        iv.layer.cornerRadius = 12
-        iv.clipsToBounds = true
-        return iv
+        let image = UIImageView()
+        image.contentMode = .scaleAspectFill
+        image.layer.cornerRadius = 12
+        image.clipsToBounds = true
+        return image
     }()
 
     override init(frame: CGRect) {

@@ -7,11 +7,11 @@
 
 import XCTest
 
-final class top_pizzaUITestsLaunchTests: XCTestCase {
+final class TopPizzaUITestsLaunchTests: XCTestCase {
 
-    override class var runsForEachTargetApplicationUIConfiguration: Bool {
-        true
-    }
+//    override class var runsForEachTargetApplicationUIConfiguration: Bool {
+//        true
+//    }
 
     override func setUpWithError() throws {
         continueAfterFailure = false

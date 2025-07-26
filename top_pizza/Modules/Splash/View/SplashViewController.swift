@@ -8,13 +8,13 @@
 import UIKit
 
 final class SplashViewController: UIViewController {
-    
+
     private let logoImageView: UIImageView = {
         let imageView = UIImageView(image: UIImage(named: "logo"))
         imageView.tintColor = .white
         return imageView
     }()
-    
+
     var presenter: SplashPresenterProtocol!
 
     override func viewDidLoad() {
@@ -23,11 +23,11 @@ final class SplashViewController: UIViewController {
         setupUI()
         presenter.viewDidLoad()
     }
-    
+
     private func setupUI() {
         view.addSubview(logoImageView)
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
-        
+
         NSLayoutConstraint.activate([
             logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             logoImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor)

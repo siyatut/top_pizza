@@ -12,7 +12,7 @@ protocol CategorySelectorDelegate: AnyObject {
 }
 
 final class CategorySelectorView: UIView {
-    
+
     private let categories = ["Пицца", "Комбо", "Десерты", "Напитки"]
     private var selectedIndex: IndexPath = IndexPath(item: 0, section: 0)
     weak var delegate: CategorySelectorDelegate?
@@ -23,12 +23,12 @@ final class CategorySelectorView: UIView {
         layout.minimumLineSpacing = 12
         layout.sectionInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
 
-        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        cv.register(CategoryCell.self, forCellWithReuseIdentifier: "CategoryCell")
-        cv.dataSource = self
-        cv.delegate = self
-        cv.showsHorizontalScrollIndicator = false
-        return cv
+        let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collection.register(CategoryCell.self, forCellWithReuseIdentifier: "CategoryCell")
+        collection.dataSource = self
+        collection.delegate = self
+        collection.showsHorizontalScrollIndicator = false
+        return collection
     }()
 
     override init(frame: CGRect) {
@@ -54,7 +54,12 @@ extension CategorySelectorView: UICollectionViewDataSource, UICollectionViewDele
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CategoryCell", for: indexPath) as! CategoryCell
+        guard let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: "CategoryCell",
+            for: indexPath
+        ) as? CategoryCell else {
+            return UICollectionViewCell()
+        }
         cell.configure(with: categories[indexPath.item], isSelected: selectedIndex == indexPath)
         return cell
     }

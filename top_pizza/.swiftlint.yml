@@ -1,0 +1,23 @@
+included:
+  - MyApp
+excluded:
+  - Pods
+disabled_rules:
+  - trailing_whitespace # Отключаем проверку пробелов в конце строк
+  - multiple_closures_with_trailing_closure
+opt_in_rules:
+  - empty_string # Проверяем использование "" вместо String()
+force_cast: error # Делаем force cast ошибкой, а не предупреждением
+force_try: warning # Force try как предупреждение
+line_length:
+  warning: 125
+  error: 140
+  ignores_comments: true # Игнорировать комментарии при подсчёте длины строки
+identifier_name:
+  min_length: 3
+  max_length:
+    warning: 40
+    error: 50
+  excluded:
+    - id
+    - URL

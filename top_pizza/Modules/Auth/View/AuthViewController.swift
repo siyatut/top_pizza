@@ -8,41 +8,41 @@
 // TODO: - №1 Пофиксить проблему с накладыванием лого на лейбл на маленьких экранах
 // TODO: - №2 Пофиксить сброс курсора с текстового поля при нажатии на значок скрытия/показа пароля
 // TODO: — №3 Значок глаза как будто слегка сплющен, посмотреть на других устройствах
-// TODO: — №5 SwiftLint + MARKs
-// TODO: - №6 Кнопка «Войти» не реагирует на валидацию с открытой клавиатурой
-// TODO: - №7 В поле с паролем не с большой буквы ввод
+// TODO: — №4 Добавить MARKs
+// TODO: - №5 Кнопка «Войти» не реагирует на валидацию с открытой клавиатурой
+// TODO: - №6 В поле с паролем не с большой буквы ввод
 
 import UIKit
 
 final class AuthViewController: UIViewController, UITextFieldDelegate {
-    
+
     private var bottomConstraint: NSLayoutConstraint!
     private var logoTopConstraint: NSLayoutConstraint!
     private var passwordBottomConstraint: NSLayoutConstraint!
-    
+
     var presenter: AuthPresenterProtocol!
-    
+
     private let authLabel: UILabel = {
         let label = UILabel()
         label.text = "Авторизация"
         label.font = .systemFont(ofSize: 16, weight: .medium)
         return label
     }()
-    
+
     private let logoImageView: UIImageView = {
         let imageView = UIImageView(image: UIImage(named: "logo"))
         imageView.tintColor = .systemPink
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
-    
+
     private let emailField = AuthTextField(placeholder: "Логин", systemImageName: "person.fill")
-    
+
     private let passwordField: AuthTextField = {
         let field = AuthTextField(placeholder: "Пароль", systemImageName: "lock.fill", isSecure: true)
         return field
     }()
-    
+
     private let loginButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Войти", for: .normal)
@@ -52,7 +52,7 @@ final class AuthViewController: UIViewController, UITextFieldDelegate {
         button.layer.cornerRadius = 20
         return button
     }()
-    
+
     private let errorBannerView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
@@ -64,7 +64,7 @@ final class AuthViewController: UIViewController, UITextFieldDelegate {
         view.isHidden = true
         return view
     }()
-    
+
     private let errorLabel: UILabel = {
         let label = UILabel()
         label.text = "Неверный логин или пароль"
@@ -73,13 +73,13 @@ final class AuthViewController: UIViewController, UITextFieldDelegate {
         label.font = .systemFont(ofSize: 16, weight: .medium)
         return label
     }()
-    
+
     private let errorCloseButton: UIButton = {
         let button = UIButton(type: .system)
-        
+
         let config = UIImage.SymbolConfiguration(pointSize: 10, weight: .bold)
         let image = UIImage(systemName: "xmark", withConfiguration: config)
-        
+
         button.setImage(image, for: .normal)
         button.backgroundColor = .systemPink
         button.tintColor = .white
@@ -87,7 +87,7 @@ final class AuthViewController: UIViewController, UITextFieldDelegate {
         button.clipsToBounds = true
         return button
     }()
-    
+
     private let bottomPanelView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
@@ -99,66 +99,81 @@ final class AuthViewController: UIViewController, UITextFieldDelegate {
         view.layer.shadowRadius = 4
         return view
     }()
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupLayout()
-        
+
         emailField.textField.delegate = self
         passwordField.textField.delegate = self
-        
+
         loginButton.addTarget(self, action: #selector(loginTapped), for: .touchUpInside)
         errorCloseButton.addTarget(self, action: #selector(hideErrorBanner), for: .touchUpInside)
-        
+
         emailField.textField.addTarget(self, action: #selector(textFieldsChanged), for: .editingChanged)
         passwordField.textField.addTarget(self, action: #selector(textFieldsChanged), for: .editingChanged)
-        
+
         loginButton.isEnabled = false
         loginButton.alpha = 0.5
-        
+
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(keyboardFrameWillChange),
             name: UIResponder.keyboardWillChangeFrameNotification,
             object: nil
         )
-        
+
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
         view.addGestureRecognizer(tapGesture)
     }
-    
-    private func setupLayout() {
-        view.backgroundColor = .systemBackground
 
+    private func setupLayout() {
+        configureViewAndAddSubviews()
+        configureErrorBannerView()
+        configureBottomPanelView()
+        setupConstraints()
+    }
+
+    private func configureViewAndAddSubviews() {
+        view.backgroundColor = .systemBackground
+        
         [authLabel, logoImageView, emailField, passwordField, bottomPanelView].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)
         }
+    }
 
+    private func configureErrorBannerView() {
         errorBannerView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(errorBannerView)
+        
         errorBannerView.addSubview(errorLabel)
         errorLabel.translatesAutoresizingMaskIntoConstraints = false
+        
         errorBannerView.addSubview(errorCloseButton)
         errorCloseButton.translatesAutoresizingMaskIntoConstraints = false
+    }
 
+    private func configureBottomPanelView() {
         bottomPanelView.addSubview(loginButton)
         loginButton.translatesAutoresizingMaskIntoConstraints = false
+    }
 
+    private func setupConstraints() {
         bottomConstraint = bottomPanelView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         bottomConstraint.isActive = true
-        
+
         logoTopConstraint = logoImageView.topAnchor.constraint(equalTo: authLabel.bottomAnchor, constant: 135)
         logoTopConstraint.priority = .defaultLow
         logoTopConstraint.isActive = true
-        
+
         let logoHeight = logoImageView.heightAnchor.constraint(equalToConstant: 103)
         logoHeight.priority = .defaultLow
         logoHeight.isActive = true
-        
+
         authLabel.setContentCompressionResistancePriority(.required, for: .vertical)
-        
+
         passwordBottomConstraint = passwordField.bottomAnchor.constraint(equalTo: bottomPanelView.topAnchor, constant: -234)
         passwordBottomConstraint.priority = .defaultHigh
         passwordBottomConstraint.isActive = true
@@ -199,30 +214,28 @@ final class AuthViewController: UIViewController, UITextFieldDelegate {
             errorCloseButton.centerYAnchor.constraint(equalTo: errorBannerView.centerYAnchor),
             errorCloseButton.trailingAnchor.constraint(equalTo: errorBannerView.trailingAnchor, constant: -16),
             errorCloseButton.widthAnchor.constraint(equalToConstant: 18),
-            errorCloseButton.heightAnchor.constraint(equalToConstant: 18),
+            errorCloseButton.heightAnchor.constraint(equalToConstant: 18)
         ])
     }
 
-     
-    
     @objc private func loginTapped() {
         presenter.login(email: emailField.textField.text, password: passwordField.textField.text)
     }
-    
+
     @objc private func keyboardFrameWillChange(_ notification: Notification) {
         guard let userInfo = notification.userInfo,
               let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
               let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double,
               let curveValue = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt else { return }
-        
+
         let keyboardVisible = keyboardFrame.origin.y < UIScreen.main.bounds.height
         bottomConstraint.constant = -max(view.frame.height - keyboardFrame.origin.y, 0)
-        
+
         logoTopConstraint.constant = keyboardVisible ? 14 : 135
         passwordBottomConstraint.constant = keyboardVisible ? -79 : -234
-        
+
         let options = UIView.AnimationOptions(rawValue: curveValue << 16)
-        
+
         UIView.animate(withDuration: duration,
                        delay: 0,
                        options: [.beginFromCurrentState, options],
@@ -230,16 +243,16 @@ final class AuthViewController: UIViewController, UITextFieldDelegate {
             self.view.layoutIfNeeded()
         })
     }
-    
+
     @objc private func textFieldsChanged() {
         let email = emailField.textField.text ?? ""
         let password = passwordField.textField.text ?? ""
-        
+
         let isFormFilled = !email.isEmpty && !password.isEmpty
         loginButton.isEnabled = isFormFilled
         loginButton.alpha = isFormFilled ? 1.0 : 0.5
     }
-    
+
     @objc private func dismissKeyboard() {
         view.endEditing(true)
     }
@@ -252,15 +265,15 @@ extension AuthViewController: AuthViewProtocol {
         errorLabel.text = message
         errorBannerView.isHidden = false
     }
-    
+
     func showSuccess() {
         errorBannerView.isHidden = true
-        
+
         let tabBar = MainTabBarController(showSuccessBanner: true)
         tabBar.modalPresentationStyle = .fullScreen
         present(tabBar, animated: true)
     }
-    
+
     @objc private func hideErrorBanner() {
         errorBannerView.isHidden = true
     }
