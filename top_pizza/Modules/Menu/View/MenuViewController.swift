@@ -5,9 +5,7 @@
 //  Created by Anastasia Tyutinova on 25/7/2568 BE.
 //
 
-// TODO: - №2 Добавить кнопку с городами с левый верхний угол
-// TODO: - №3 Разделить этот модуль по папкам
-// TODO: - №4 Цвета меню с категориями
+// TODO: - №1 Пофиксить изменение цвет в меню с категориями
 
 import UIKit
 
@@ -93,8 +91,6 @@ final class MenuViewController: UIViewController, MenuView {
         
         tableView.dataSource = self
         tableView.delegate = self
-        
-       // tableView.contentInset.top = showSuccessBanner ? 64 : 0
         
         tableView.register(MenuItemCell.self, forCellReuseIdentifier: "MenuItemCell")
         view.addSubview(tableView)
