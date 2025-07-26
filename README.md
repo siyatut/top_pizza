@@ -4,9 +4,6 @@
 
 This is a food menu application built using the MVP architecture. The app features a login screen, banner carousel, categorized menu, and dynamic sticky category headers. Upon successful authorization, users are taken to the menu screen where they can browse food items grouped by sections such as Pizza, Combo, Desserts, and Drinks. The UI is fully custom and includes animated banners and interactive selection. The project uses a modular folder structure, enforces code quality with SwiftLint, and supports portrait orientation only for optimal user experience.
 
-#### 🎥 Preview
-Please note: The GIF may take a few seconds to load, depending on your connection. Thank you for your patience!
-
 #### 🛠 **Technologies**
 
 * Swift + UIKit
