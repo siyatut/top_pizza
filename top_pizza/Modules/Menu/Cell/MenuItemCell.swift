@@ -7,9 +7,9 @@
 
 import UIKit
 
-final class PizzaCell: UITableViewCell {
+final class MenuItemCell: UITableViewCell {
     
-    private let pizzaImageView = UIImageView()
+    private let itemImageView = UIImageView()
     private let titleLabel = UILabel()
     private let descriptionLabel = UILabel()
     private let priceButton = UIButton(type: .system)
@@ -23,22 +23,22 @@ final class PizzaCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(with pizza: Pizza) {
+    func configure(with pizza: MenuItem) {
         titleLabel.text = pizza.title
         descriptionLabel.text = pizza.description
         priceButton.setTitle("от \(pizza.price) р", for: .normal)
-        pizzaImageView.loadImage(from: pizza.imageUrl)
+        itemImageView.loadImage(from: pizza.imageUrl)
     }
 
     private func setupLayout() {
-        [pizzaImageView, titleLabel, descriptionLabel, priceButton].forEach {
+        [itemImageView, titleLabel, descriptionLabel, priceButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview($0)
         }
 
-        pizzaImageView.contentMode = .scaleAspectFill
-        pizzaImageView.clipsToBounds = true
-        pizzaImageView.layer.cornerRadius = 10
+        itemImageView.contentMode = .scaleAspectFill
+        itemImageView.clipsToBounds = true
+        itemImageView.layer.cornerRadius = 10
 
         titleLabel.font = .boldSystemFont(ofSize: 17)
         descriptionLabel.font = .systemFont(ofSize: 13)
@@ -51,13 +51,13 @@ final class PizzaCell: UITableViewCell {
         priceButton.layer.borderWidth = 1
 
         NSLayoutConstraint.activate([
-            pizzaImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            pizzaImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            pizzaImageView.widthAnchor.constraint(equalToConstant: 132),
-            pizzaImageView.heightAnchor.constraint(equalToConstant: 132),
+            itemImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            itemImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            itemImageView.widthAnchor.constraint(equalToConstant: 132),
+            itemImageView.heightAnchor.constraint(equalToConstant: 132),
 
             titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-            titleLabel.leadingAnchor.constraint(equalTo: pizzaImageView.trailingAnchor, constant: 32),
+            titleLabel.leadingAnchor.constraint(equalTo: itemImageView.trailingAnchor, constant: 32),
             titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -24),
 
             descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),

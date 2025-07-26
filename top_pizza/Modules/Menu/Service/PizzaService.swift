@@ -8,11 +8,11 @@
 import UIKit
 
 protocol PizzaServiceProtocol {
-    func fetchPizzas(completion: @escaping (Result<[Pizza], Error>) -> Void)
+    func fetchPizzas(completion: @escaping (Result<[MenuItem], Error>) -> Void)
 }
 
 final class PizzaService: PizzaServiceProtocol {
-    func fetchPizzas(completion: @escaping (Result<[Pizza], Error>) -> Void) {
+    func fetchPizzas(completion: @escaping (Result<[MenuItem], Error>) -> Void) {
         guard let url = URL(string: "https://dummyjson.com/products") else {
             completion(.failure(NSError(domain: "Invalid URL", code: 0)))
             return

@@ -5,7 +5,7 @@
 //  Created by Anastasia Tyutinova on 25/7/2568 BE.
 //
 
-struct Pizza: Decodable {
+struct MenuItem: Decodable {
     let id: Int
     let title: String
     let description: String
@@ -19,6 +19,6 @@ struct Pizza: Decodable {
 }
 
 struct PizzaResponse: Decodable {
-    let products: [Pizza]
+    let products: [MenuItem]
 }
 

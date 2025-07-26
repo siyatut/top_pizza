@@ -7,5 +7,5 @@
 
 struct MenuSection {
     let title: String
-    let items: [Pizza]
+    let items: [MenuItem]
 }

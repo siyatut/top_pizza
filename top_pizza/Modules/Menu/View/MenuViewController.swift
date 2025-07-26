@@ -5,7 +5,6 @@
 //  Created by Anastasia Tyutinova on 25/7/2568 BE.
 //
 
-// TODO: - №1 Пофиксить краш при перещёлкивании между категориями меню
 // TODO: - №2 Добавить кнопку с городами с левый верхний угол
 // TODO: - №3 Разделить этот модуль по папкам
 // TODO: - №4 Меню с категориями не прилипло к верху, а ещё поработать с цветами
@@ -98,7 +97,7 @@ final class MenuViewController: UIViewController, MenuView {
         
         tableView.contentInset.top = showSuccessBanner ? 64 : 0
         
-        tableView.register(PizzaCell.self, forCellReuseIdentifier: "PizzaCell")
+        tableView.register(MenuItemCell.self, forCellReuseIdentifier: "PizzaCell")
         view.addSubview(tableView)
         
         NSLayoutConstraint.activate([
@@ -166,8 +165,13 @@ final class MenuViewController: UIViewController, MenuView {
     }
     
     
-    func display(pizzas: [Pizza]) {
-        menuSections[0] = MenuSection(title: "Пицца", items: pizzas)
+    func display(menuItems: [MenuItem]) {
+        let chunkSize = menuItems.count / 4
+        menuSections[0] = MenuSection(title: "Пицца", items: Array(menuItems[0..<chunkSize]))
+        menuSections[1] = MenuSection(title: "Комбо", items: Array(menuItems[chunkSize..<(chunkSize * 2)]))
+        menuSections[2] = MenuSection(title: "Десерты", items: Array(menuItems[(chunkSize * 2)..<(chunkSize * 3)]))
+        menuSections[3] = MenuSection(title: "Напитки", items: Array(menuItems[(chunkSize * 3)...]))
+        
         tableView.reloadData()
     }
     
@@ -191,7 +195,7 @@ extension MenuViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "PizzaCell", for: indexPath) as? PizzaCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "PizzaCell", for: indexPath) as? MenuItemCell else {
             return UITableViewCell()
         }
         let pizza = menuSections[indexPath.section].items[indexPath.row]
@@ -202,6 +206,7 @@ extension MenuViewController: UITableViewDataSource, UITableViewDelegate {
 
 extension MenuViewController: CategorySelectorDelegate {
     func didSelectCategory(index: Int) {
+        guard menuSections[index].items.count > 0 else { return }
         let indexPath = IndexPath(row: 0, section: index)
         tableView.scrollToRow(at: indexPath, at: .top, animated: true)
     }

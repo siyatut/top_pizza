@@ -8,7 +8,7 @@
 import UIKit
 
 protocol MenuView: AnyObject {
-    func display(pizzas: [Pizza])
+    func display(menuItems: [MenuItem])
     func display(error: String)
 }
 
@@ -26,7 +26,7 @@ final class MenuPresenter {
             DispatchQueue.main.async {
                 switch result {
                 case .success(let pizzas):
-                    self?.view?.display(pizzas: pizzas)
+                    self?.view?.display(menuItems: pizzas)
                 case .failure(let error):
                     self?.view?.display(error: error.localizedDescription)
                 }
